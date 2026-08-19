@@ -28,17 +28,6 @@ static struct parser *new_num(enum parser_kind kind, int value)
 	return node;
 };
 
-static struct parser *get_number(struct lexer **lex) 
-{
-	struct parser *rhs = mul(lex);
-
-	if (!rhs) {
-		exit(1);
-	}
-
-	return rhs;
-}
-
 static struct parser *primary(struct lexer **lex) 
 {
 	if ((*lex)->kind == TOKEN_END) {
@@ -67,11 +56,23 @@ static struct parser *expr(struct lexer **lex)
 
 	if (equal((*lex), "+")) {
 		*lex = (*lex)->next_token;
-		node = new_node(ND_ADD, node, get_number(lex));
+
+		struct parser *rhs = mul(lex);
+		if (!rhs) {
+			exit(1);
+		}
+
+		node = new_node(ND_ADD, node, rhs);
 	}
 	if (equal((*lex), "-")){
 		*lex = (*lex)->next_token;
-		node = new_node(ND_MINUS, node, get_number(lex));
+
+		struct parser *rhs = mul(lex);
+		if (!rhs) {
+			exit(1);
+		}
+
+		node = new_node(ND_MINUS, node, rhs);
 	}
 
 	return node;
@@ -89,11 +90,23 @@ static struct parser *mul(struct lexer **lex)
 	
 	if (equal((*lex), "*")) {
 		*lex = (*lex)->next_token;
-		node = new_node(ND_MUL, node, get_number(lex));
+
+		struct parser *rhs = primary(lex);
+		if (!rhs) {
+			exit(1);
+		}
+
+		node = new_node(ND_MUL, node, rhs);
 	}
 	if (equal((*lex), "/")) {
 		*lex = (*lex)->next_token;
-		node = new_node(ND_DIV, node, get_number(lex));
+
+		struct parser *rhs = primary(lex);
+		if (!rhs) {
+			exit(1);
+		}
+
+		node = new_node(ND_DIV, node, rhs);
 	}
 
 	return node;
