@@ -1,34 +1,58 @@
 #include "ncc.h"
 
-static int get_number(struct lexer *lex) 
+static int get_number(struct parser *node) 
 {
-	if (lex->kind != TOKEN_INT) {
+	if (node->kind != NUMBER) {
 		fprintf(stderr, "Error");
 		exit(1);
 	};
 
-	return lex->val;
+	return node->value;
 };
 
-void codegen(struct lexer *lex) {
-	printf("  .globl main\n");
-	printf("main:\n");
-
-	if (lex->kind == TOKEN_INT) {
-		printf("  mov $%d, %%rax\n", lex->val);
+static void print_asm(struct parser *node) {
+	if (!node) {return;};
+	
+	if (node->kind == NUMBER) {
+		printf("  mov $%d, %%rax\n", get_number(node));
+		return;
 	}
 
-	while (lex->kind != TOKEN_END) {
-		if (lex->kind == TOKEN_PUNCT) {
-			if (*lex->loc == '+') {
-				printf("  add $%d, %%rax\n", get_number(lex->next_token));
-			}
-			else if (*lex->loc == '-') {
-				printf("  sub $%d, %%rax\n", get_number(lex->next_token));
-			}	
-		}
-		lex = lex->next_token;
-	};
+	print_asm(node->lhs);
+
+	printf("  push %%rax\n");
+
+	print_asm(node->rhs);
+
+	printf("  pop %%rbx\n");
+
+	switch (node->kind) {
+		case ADD:
+			printf("  add %%rbx, %%rax\n");
+			break;
+		case MINUS:
+			printf("  sub %%rax, %%rbx\n");
+			printf("  mov %%rbx, %%rax\n");
+			break;
+		case MUL:
+			printf("  imul %%rbx, %%rax\n");
+			break;
+		case DIV:
+			printf("  xor %%rdx, %%rdx\n");
+			printf("  div %%rbx\n");
+			break;
+		default:
+			break;
+	}
+};
+
+void codegen(struct parser *node) {
+	if (!node) {return;};
+
+	printf("  .globl main\n");
+	printf("main:\n");
+	
+	print_asm(node);
 
 	printf("  ret\n");
 };

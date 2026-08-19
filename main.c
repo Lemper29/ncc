@@ -10,6 +10,9 @@ int main(int argc, char **argv)
 
 	struct lexer *lex = lexer(argv[1]);
 
-	codegen(lex);
+	struct parser *node = parser(lex);
+
+	codegen(node);
+
 	return 0;
 }

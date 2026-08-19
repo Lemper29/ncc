@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include "ctype.h"
 #include "stdio.h"
+#include "stdbool.h"
+#include "string.h"
 
 enum lexer_kind {
 	TOKEN_INT,
@@ -16,5 +18,24 @@ struct lexer {
 	char *loc;
 };
 
+enum parser_kind {
+	MUL,
+	DIV,
+	ADD,
+	MINUS,
+	NUMBER
+};
+
+struct parser {
+	enum parser_kind kind;
+	struct parser *lhs;
+	struct parser *rhs;
+	int value;
+}; 
+
+
 struct lexer *lexer(char *p);
-void codegen(struct lexer *lex);
+
+struct parser *parser(struct lexer *lex);
+
+void codegen(struct parser *parse);
