@@ -1,20 +1,11 @@
 #include "ncc.h"
 
-static int get_number(struct parser *node) 
+static void print_asm(struct parser *node) 
 {
-	if (node->kind != NUMBER) {
-		fprintf(stderr, "Error");
-		exit(1);
-	};
-
-	return node->value;
-};
-
-static void print_asm(struct parser *node) {
 	if (!node) {return;};
-	
-	if (node->kind == NUMBER) {
-		printf("  mov $%d, %%rax\n", get_number(node));
+
+	if (node->kind == ND_NUMB) {
+		printf("  mov $%d, %%rax\n", node->value);
 		return;
 	}
 
@@ -27,17 +18,17 @@ static void print_asm(struct parser *node) {
 	printf("  pop %%rbx\n");
 
 	switch (node->kind) {
-		case ADD:
+		case ND_ADD:
 			printf("  add %%rbx, %%rax\n");
 			break;
-		case MINUS:
+		case ND_MINUS:
 			printf("  sub %%rax, %%rbx\n");
 			printf("  mov %%rbx, %%rax\n");
 			break;
-		case MUL:
+		case ND_MUL:
 			printf("  imul %%rbx, %%rax\n");
 			break;
-		case DIV:
+		case ND_DIV:
 			printf("  xor %%rdx, %%rdx\n");
 			printf("  div %%rbx\n");
 			break;
@@ -46,7 +37,8 @@ static void print_asm(struct parser *node) {
 	}
 };
 
-void codegen(struct parser *node) {
+void codegen(struct parser *node) 
+{
 	if (!node) {return;};
 
 	printf("  .globl main\n");

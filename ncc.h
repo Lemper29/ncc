@@ -6,7 +6,7 @@
 #include "string.h"
 
 enum lexer_kind {
-	TOKEN_INT,
+	TOKEN_NUMB,
 	TOKEN_PUNCT,
 	TOKEN_END,
 };
@@ -19,11 +19,11 @@ struct lexer {
 };
 
 enum parser_kind {
-	MUL,
-	DIV,
-	ADD,
-	MINUS,
-	NUMBER
+	ND_MUL,
+	ND_DIV,
+	ND_ADD,
+	ND_MINUS,
+	ND_NUMB
 };
 
 struct parser {

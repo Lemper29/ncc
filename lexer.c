@@ -28,11 +28,11 @@ struct lexer *lexer(char *p)
 
 		if (isdigit(*p)) {
 			char *endptr;
-			tok = tok->next_token = new_lexer(TOKEN_INT, p);
+			tok = tok->next_token = new_lexer(TOKEN_NUMB, p);
 			tok->val = strtoul(p, &endptr, 10);
 			p = endptr;
 			continue;
-		};
+		} 
 
 		fprintf(stderr, "Error\n");
 	}
